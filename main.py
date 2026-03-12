@@ -3,7 +3,7 @@
 Simple demo program for practicing GitHub workflow
 """
 
-def greet(name):
+def greet2(name):
     """Greet someone by name"""
     return f"Hello, {name}! Welcome to GitHub."
 
