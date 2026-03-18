@@ -31,9 +31,8 @@ jobs:
             const issueNumber = context.payload.issue.number;
             const title = context.payload.issue.title || "";
 
-            const baseBranch = process.env.BASE_BRANCH || "main";
+            const baseBranch = "main";
 
-            // slugify title -> "short-title"
             const slug = title
               .toLowerCase()
               .trim()
@@ -44,7 +43,6 @@ jobs:
 
             const branchName = `issue-${issueNumber}-${slug}`;
 
-            // 1) get base sha
             const baseRef = await github.rest.git.getRef({
               owner,
               repo,
@@ -53,7 +51,6 @@ jobs:
 
             const baseSha = baseRef.data.object.sha;
 
-            // 2) create new branch ref
             try {
               await github.rest.git.createRef({
                 owner,
@@ -62,18 +59,13 @@ jobs:
                 sha: baseSha,
               });
             } catch (e) {
-              // If branch already exists, still comment
+              // 422: Reference already exists
               if (e.status !== 422) throw e;
             }
 
-            // 3) comment on issue
             await github.rest.issues.createComment({
               owner,
               repo,
               issue_number: issueNumber,
               body: `已建立分支 \`${branchName}\`（base: \`${baseBranch}\`）`,
             });
-        env:
-          # 可改成 develop，或把 BASE_BRANCH 存在 Secrets 以便不用改檔
-
-
