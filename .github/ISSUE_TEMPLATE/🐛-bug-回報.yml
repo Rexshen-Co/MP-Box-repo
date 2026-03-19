@@ -16,13 +16,13 @@ body:
     validations:
       required: true
       
-- type: textarea
-  id: steps
-  attributes:
-    label: 請提供問題重現的步驟：
-    placeholder: "1. ...\n2. ..."
-  validations:
-    required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 請提供問題重現的步驟：
+      placeholder: "1. ...\n2. ..."
+    validations:
+      required: true
         
   - type: textarea
     id: logs
