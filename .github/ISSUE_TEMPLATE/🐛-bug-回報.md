@@ -1,13 +1,7 @@
----
-name: "\U0001F41B Bug 回報"
-about: 建立一個 Bug 回報以協助我們改善專案
-title: ''
-labels: bug
-assignees: ''
-type: Bug
-
----
-
+name: 🐛 Bug 回報
+description: 建立一個 Bug 回報以協助我們改善專案
+title: "[Bug]: "
+labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
