@@ -1,0 +1,44 @@
+name: ✨ 新功能請求
+description: 提出新功能建議以協助我們豐富與改善專案
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        開立前，請先搜尋是否已有相同或類似的 Issue 提案。
+        
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 您的需求或建議是什麼？
+      description: 請清楚且詳細地描述您的問題或希望新增的功能。例如：「我希望能夠...，因為目前使用上遇到...的困擾。」
+      placeholder: 請告訴我們您希望有什麼新功能...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: 具體的使用情境與案例：
+      description: 請說明在什麼情況或流程下，這個新功能會為您帶來幫助？
+      placeholder: "情境 1. 當使用者...\n情境 2. 如果能夠..."
+    validations:
+      required: true
+        
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案（選填）
+      description: 您是否有考慮過、或正在使用任何替代方案來達成這個目的？
+      placeholder: 目前我是透過...來解決。
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 補充資訊（選填）
+      description: 有沒有其他的補充資訊、截圖、或相關的參考連結？
+    validations:
+      required: false
