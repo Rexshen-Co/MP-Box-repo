@@ -1,0 +1,40 @@
+name: ✨ 新Epic請求
+description: 提出新功能建議以協助我們豐富與改善專案
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        開立前，請先搜尋是否已有相同或類似的 Issue 提案。
+        
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 需求或建議：
+      description: 請清楚且詳細地描述您的問題或希望新增的功能。例如：「我希望能夠...，因為目前使用上遇到...的困擾。」
+      placeholder: 請告訴我們您希望有什麼新功能...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: 具體使用情境與案例：
+      description: 請說明在什麼情況或流程下，這個新功能會為使用者帶來幫助？
+      placeholder: "情境 1. 當使用者...\n情境 2. 如果能夠..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: repos
+    attributes:
+      label: "🚀 選擇要自動建立子任務的 Repo"
+      description: "送出後，系統會自動在勾選的 Repo 建立關聯 Issue"
+      options:
+        - label: "SD"
+          required: false
+        - label: "Frontend"
+          required: false
+        - label: "Backend"
+          required: false
