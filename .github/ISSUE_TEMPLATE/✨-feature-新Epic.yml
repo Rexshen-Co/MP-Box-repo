@@ -38,3 +38,12 @@ body:
           required: false
         - label: "Backend"
           required: false
+
+  - type: checkboxes
+    id: chk
+    attributes:
+      label: "請檢查填寫是否完整"
+      description: "確認檢查完畢後才能送出"
+      options:
+        - label: "已經檢查"
+          required: true
