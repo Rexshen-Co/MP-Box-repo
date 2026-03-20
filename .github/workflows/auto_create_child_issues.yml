@@ -3,7 +3,7 @@ name: 自動建立子任務 (Cross-Repo Issues)
 on:
   issues:
     # 加入 labeled 確保不會因為 GitHub 系統延遲貼標籤而跳過
-    types: [opened, labeled]
+    types: [opened]
 
 jobs:
   create-child-issues:
