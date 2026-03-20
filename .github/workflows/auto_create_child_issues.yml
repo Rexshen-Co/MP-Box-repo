@@ -22,24 +22,24 @@ jobs:
           echo "==== 開始執行自動開單腳本 ===="
           COMMENT_BODY="### 🤖 自動建立的子任務清單：\n"
           
-          # 1. 檢查是否勾選了 SD (用 -iF 代表純文字比對，不分大小寫)
+          # 1. 檢查是否勾選了 SD
           if echo "$ISSUE_BODY" | grep -iF "[x] SD"; then
             echo "偵測到勾選 SD，建立 P01-docs Issue..."
-            SD_URL=$(gh issue create --repo "$ORG_NAME/P01-docs" --title "設計: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "design")
+            SD_URL=$(gh issue create --repo "$ORG_NAME/P01-docs" --title "設計: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL")
             COMMENT_BODY+="- [ ] **SD**: $SD_URL\n"
           fi
           
           # 2. 檢查是否勾選了 Frontend
           if echo "$ISSUE_BODY" | grep -iF "[x] Frontend"; then
             echo "偵測到勾選 Frontend，建立 P01-frontend Issue..."
-            FE_URL=$(gh issue create --repo "$ORG_NAME/P01-frontend" --title "前端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "enhancement")
+            FE_URL=$(gh issue create --repo "$ORG_NAME/P01-frontend" --title "前端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL")
             COMMENT_BODY+="- [ ] **Frontend**: $FE_URL\n"
           fi
           
           # 3. 檢查是否勾選了 Backend
           if echo "$ISSUE_BODY" | grep -iF "[x] Backend"; then
             echo "偵測到勾選 Backend，建立 P01-backend Issue..."
-            BE_URL=$(gh issue create --repo "$ORG_NAME/P01-backend" --title "後端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "enhancement")
+            BE_URL=$(gh issue create --repo "$ORG_NAME/P01-backend" --title "後端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL")
             COMMENT_BODY+="- [ ] **Backend**: $BE_URL\n"
           fi
           
