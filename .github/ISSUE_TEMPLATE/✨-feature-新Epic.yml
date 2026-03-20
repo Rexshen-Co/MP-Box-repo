@@ -1,6 +1,6 @@
-name: ✨ 新Epic請求
+name: ✨ 新epic請求
 description: 提出新功能建議以協助我們豐富與改善專案
-title: "[Feature]: "
+title: "[Feature-epic]: "
 labels: ["enhancement", "triage"]
 body:
   - type: markdown
