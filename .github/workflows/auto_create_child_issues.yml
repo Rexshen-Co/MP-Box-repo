@@ -2,46 +2,51 @@ name: 自動建立子任務 (Cross-Repo Issues)
 
 on:
   issues:
-    types: [opened]
+    # 加入 labeled 確保不會因為 GitHub 系統延遲貼標籤而跳過
+    types: [opened, labeled]
 
 jobs:
   create-child-issues:
-    # 只有當 Issue 帶有 'epic' 標籤時才執行
+    # 只要標籤有 epic 就執行
     if: contains(github.event.issue.labels.*.name, 'epic')
     runs-on: ubuntu-latest
     steps:
       - name: 解析勾選清單並建立子 Issue
         env:
-          # 使用我們剛剛設定的萬能鑰匙
           GH_TOKEN: ${{ secrets.CROSS_REPO_PAT }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           SA_TITLE: ${{ github.event.issue.title }}
           SA_URL: ${{ github.event.issue.html_url }}
           ORG_NAME: "MPinfo-Co" 
         run: |
-          # 準備留言的內容，用來回報建立結果
+          echo "==== 開始執行自動開單腳本 ===="
           COMMENT_BODY="### 🤖 自動建立的子任務清單：\n"
           
-          # 1. 檢查是否勾選了 SD
-          if echo "$ISSUE_BODY" | grep -q "[x] SD" || echo "$ISSUE_BODY" | grep -q "[X] SD"; then
-            echo "建立 SD Issue..."
+          # 1. 檢查是否勾選了 SD (用 -iF 代表純文字比對，不分大小寫)
+          if echo "$ISSUE_BODY" | grep -iF "[x] SD"; then
+            echo "偵測到勾選 SD，建立 P01-docs Issue..."
             SD_URL=$(gh issue create --repo "$ORG_NAME/P01-docs" --title "設計: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "design")
             COMMENT_BODY+="- [ ] **SD**: $SD_URL\n"
           fi
           
           # 2. 檢查是否勾選了 Frontend
-          if echo "$ISSUE_BODY" | grep -q "[x] Frontend" || echo "$ISSUE_BODY" | grep -q "[X] Frontend"; then
-            echo "建立 Frontend Issue..."
+          if echo "$ISSUE_BODY" | grep -iF "[x] Frontend"; then
+            echo "偵測到勾選 Frontend，建立 P01-frontend Issue..."
             FE_URL=$(gh issue create --repo "$ORG_NAME/P01-frontend" --title "前端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "enhancement")
             COMMENT_BODY+="- [ ] **Frontend**: $FE_URL\n"
           fi
           
           # 3. 檢查是否勾選了 Backend
-          if echo "$ISSUE_BODY" | grep -q "[x] Backend" || echo "$ISSUE_BODY" | grep -q "[X] Backend"; then
-            echo "建立 Backend Issue..."
+          if echo "$ISSUE_BODY" | grep -iF "[x] Backend"; then
+            echo "偵測到勾選 Backend，建立 P01-backend Issue..."
             BE_URL=$(gh issue create --repo "$ORG_NAME/P01-backend" --title "後端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "enhancement")
             COMMENT_BODY+="- [ ] **Backend**: $BE_URL\n"
           fi
           
-          # 4. 把剛剛建立的連結清單，留言回原本的 SA Issue 中
-          gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body "$(echo -e $COMMENT_BODY)"
+          # 4. 如果有建立任何 Issue，才留言回原本的 SA Issue 中
+          if [[ "$COMMENT_BODY" != "### 🤖 自動建立的子任務清單：\n" ]]; then
+            echo "準備留言..."
+            gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body "$(echo -e $COMMENT_BODY)"
+          else
+            echo "沒有勾選任何項目，結束腳本。"
+          fi
