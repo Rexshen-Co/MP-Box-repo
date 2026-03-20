@@ -1,0 +1,48 @@
+name: 自動建立子任務 (Cross-Repo Issues)
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-child-issues:
+    # 只有當 Issue 帶有 'epic' 標籤時才執行
+    if: contains(github.event.issue.labels.*.name, 'epic')
+    runs-on: ubuntu-latest
+    steps:
+      - name: 解析勾選清單並建立子 Issue
+        env:
+          # 使用我們剛剛設定的萬能鑰匙
+          GH_TOKEN: ${{ secrets.CROSS_REPO_PAT }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          SA_TITLE: ${{ github.event.issue.title }}
+          SA_URL: ${{ github.event.issue.html_url }}
+          # ⚠️ 請把這裡換成你的組織名稱或個人帳號名稱
+          ORG_NAME: "YOUR_ORG_NAME" 
+        run: |
+          # 準備留言的內容，用來回報建立結果
+          COMMENT_BODY="### 🤖 自動建立的子任務清單：\n"
+          
+          # 1. 檢查是否勾選了 SD
+          if echo "$ISSUE_BODY" | grep -q "[x] SD" || echo "$ISSUE_BODY" | grep -q "[X] SD"; then
+            echo "建立 SD Issue..."
+            SD_URL=$(gh issue create --repo "$ORG_NAME/P01-docs" --title "設計: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "design")
+            COMMENT_BODY+="- [ ] **SD**: $SD_URL\n"
+          fi
+          
+          # 2. 檢查是否勾選了 Frontend
+          if echo "$ISSUE_BODY" | grep -q "[x] Frontend" || echo "$ISSUE_BODY" | grep -q "[X] Frontend"; then
+            echo "建立 Frontend Issue..."
+            FE_URL=$(gh issue create --repo "$ORG_NAME/P01-frontend" --title "前端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "enhancement")
+            COMMENT_BODY+="- [ ] **Frontend**: $FE_URL\n"
+          fi
+          
+          # 3. 檢查是否勾選了 Backend
+          if echo "$ISSUE_BODY" | grep -q "[x] Backend" || echo "$ISSUE_BODY" | grep -q "[X] Backend"; then
+            echo "建立 Backend Issue..."
+            BE_URL=$(gh issue create --repo "$ORG_NAME/P01-backend" --title "後端: $SA_TITLE" --body "📌 **對應母任務**：$SA_URL" --label "enhancement")
+            COMMENT_BODY+="- [ ] **Backend**: $BE_URL\n"
+          fi
+          
+          # 4. 把剛剛建立的連結清單，留言回原本的 SA Issue 中
+          gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body "$(echo -e $COMMENT_BODY)"
