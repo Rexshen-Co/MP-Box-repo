@@ -1,7 +1,7 @@
 name: ✨ 新epic請求
 description: 提出新功能建議以協助我們豐富與改善專案
 title: "[Feature-epic]: "
-labels: ["enhancement", "triage"]
+labels: ["enhancement", "triage", "epic"]
 body:
   - type: markdown
     attributes:
@@ -12,7 +12,7 @@ body:
     id: feature-description
     attributes:
       label: 需求或建議：
-      description: 請清楚且詳細地描述您的問題或希望新增的功能。例如：「我希望能夠...，因為目前使用上遇到...的困擾。」
+      description: 請清楚且詳細地描述預計新增的功能。例如：「要解決的困擾、什麼時候會發生、建議設計方向。」
       placeholder: 請告訴我們您希望有什麼新功能...
     validations:
       required: true
