@@ -1,0 +1,68 @@
+name: PR Validate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto-inject Closes reference
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branchName = context.payload.pull_request.head.ref;
+            const match = branchName.match(/^issue-(\d+)/);
+
+            if (!match) {
+              console.log('分支名稱不符合 issue-{number} 格式，略過自動注入。');
+              return;
+            }
+
+            const issueNumber = match[1];
+            const closesRef = `Closes #${issueNumber}`;
+            let body = context.payload.pull_request.body || '';
+
+            if (body.includes(closesRef)) {
+              console.log(`"${closesRef}" 已存在，略過。`);
+              return;
+            }
+
+            body = body.trimEnd() + `\n\n${closesRef}`;
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              body: body
+            });
+            console.log(`已自動注入 "${closesRef}" 至 PR body。`);
+
+      - name: Validate testing section
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let body = context.payload.pull_request.body || '';
+
+            // 移除 HTML 註解
+            body = body.replace(/<!--[\s\S]*?-->/g, '');
+
+            // 找到「測試方式」區塊的內容（到下一個 ## 或結尾為止）
+            const match = body.match(/##\s*測試方式([\s\S]*?)(?=\n##|$)/);
+
+            if (!match) {
+              core.setFailed('PR body 缺少「## 測試方式」區塊，請依照 PR 模板填寫。');
+              return;
+            }
+
+            const content = match[1].trim();
+
+            if (!content) {
+              core.setFailed('「測試方式」不得為空，請描述你如何驗證這個變更。');
+              return;
+            }
+
+            console.log('測試方式驗證通過。');
